@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0d2019" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Blockhaven — Tetris Cottage</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23122c21'/%3E%3Cpath d='M32 8 54 20 32 32 10 20Z' fill='%23d9ff8e'/%3E%3Cpath d='M10 20v24l22 12V32Z' fill='%237dcc53'/%3E%3Cpath d='M54 20v24L32 56V32Z' fill='%234fa53c'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div class="sky"></div>
+    <canvas id="scene" aria-label="3D Tetris cottage building game"></canvas>
+    <div class="sun-haze"></div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+
+    <header class="topbar" id="topbar">
+      <div class="brand">
+        <div class="brand-cube" aria-hidden="true">
+          <span class="cube-top"></span><span class="cube-left"></span><span class="cube-right"></span>
+        </div>
+        <div class="brand-type">
+          <h1>BLOCKHAVEN</h1>
+          <p>TETRIS COTTAGE</p>
+        </div>
+      </div>
+
+      <div class="scoreboard" aria-live="polite">
+        <div class="score-item">
+          <span>SCORE</span>
+          <strong id="score">0</strong>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-item">
+          <span>LEVEL</span>
+          <strong id="level">1</strong>
+        </div>
+        <div class="score-divider"></div>
+        <div class="score-item">
+          <span>LINES</span>
+          <strong id="lines">0</strong>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" id="soundBtn" aria-label="Toggle sound" title="Sound">
+          <svg class="ico ico-sound" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.2v5.6h3.4L13 19V5L7.4 9.2H4Z"/><path class="wave" d="M16 8.2c1.7 1.9 1.7 5.7 0 7.6M18.8 5.7c3 3.1 3 9.5 0 12.6"/></svg>
+          <svg class="ico ico-muted" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.2v5.6h3.4L13 19V5L7.4 9.2H4Z"/><path class="wave" d="m16.4 9.3 4.4 5.4m0-5.4-4.4 5.4"/></svg>
+        </button>
+        <button class="icon-btn" id="pauseBtn" aria-label="Pause game" title="Pause">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13M16 5.5v13"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="cottage-cam hud-panel" id="cottageCam">
+      <div class="panel-label"><span class="live-dot"></span> COTTAGE CAM</div>
+      <div class="cam-window" id="camWindow"></div>
+    </section>
+
+    <section class="build-panel hud-panel" id="buildPanel">
+      <div class="panel-label"><span class="live-dot"></span> COTTAGE BUILD</div>
+      <div class="build-top">
+        <div>
+          <div class="build-name" id="stageName">Breaking ground</div>
+          <div class="build-sub" id="stageSub">Clear lines to raise the cottage</div>
+        </div>
+        <strong class="build-pct" id="buildPct">0%</strong>
+      </div>
+      <div class="progress-track"><i id="buildBar"></i><span class="progress-shine"></span></div>
+      <div class="build-pips" id="buildPips" aria-hidden="true"></div>
+    </section>
+
+    <aside class="piece-stack">
+      <section class="piece-panel hud-panel next-panel">
+        <div class="panel-label">NEXT</div>
+        <div class="next-list" id="nextGrid"></div>
+      </section>
+      <section class="piece-panel hud-panel hold-panel" id="holdPanel">
+        <div class="panel-label">HOLD <span class="key-hint">C</span></div>
+        <div class="mini-piece hold-mini" id="holdGrid"></div>
+      </section>
+    </aside>
+
+    <div class="combo-pop" id="comboPop"><b id="comboText">DOUBLE!</b><span id="comboSub">+300</span></div>
+    <div class="toast" id="toast"><span class="toast-icon">✦</span><span id="toastText">Foundation laid</span></div>
+
+    <div class="touch-controls" id="touchControls" aria-label="Touch controls">
+      <div class="touch-cluster move-cluster">
+        <button class="touch-btn" data-action="left" aria-label="Move left">
+          <svg viewBox="0 0 24 24"><path d="M14.5 5.5 8 12l6.5 6.5"/></svg>
+        </button>
+        <button class="touch-btn" data-action="right" aria-label="Move right">
+          <svg viewBox="0 0 24 24"><path d="m9.5 5.5 6.5 6.5-6.5 6.5"/></svg>
+        </button>
+      </div>
+      <div class="touch-cluster action-cluster">
+        <button class="touch-btn round" data-action="hold" aria-label="Hold piece">
+          <svg viewBox="0 0 24 24"><path d="M7 8.5h10l-2.3-2.3M17 15.5H7l2.3 2.3"/></svg>
+        </button>
+        <button class="touch-btn round rotate" data-action="rotate" aria-label="Rotate piece">
+          <svg viewBox="0 0 24 24"><path d="M18.5 9.5A7 7 0 1 0 19 14"/><path d="M18.8 4.8v4.9h-4.9"/></svg>
+        </button>
+        <button class="touch-btn round" data-action="down" aria-label="Soft drop">
+          <svg viewBox="0 0 24 24"><path d="M12 5v12m-5-5 5 5 5-5"/></svg>
+        </button>
+        <button class="touch-btn drop" data-action="drop" aria-label="Hard drop">
+          <span>DROP</span>
+          <svg viewBox="0 0 24 24"><path d="M12 4v10m-4.5-4L12 14.5 16.5 10M6 19h12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="overlay menu-overlay" id="menuOverlay">
+      <div class="menu-glow"></div>
+      <div class="menu-content">
+        <div class="eyebrow"><span></span> A COZY BLOCK-STACKING ADVENTURE <span></span></div>
+        <h2 class="hero-title"><span>STACK</span><span class="accent">CLEAR</span><span>BUILD</span></h2>
+        <p class="hero-copy">Every line you clear raises another piece of your dream cottage. Fit the blocks, build the home.</p>
+        <button class="primary-btn" id="playBtn">
+          <span class="play-icon">▶</span>
+          <span class="btn-copy"><b>START BUILDING</b><small>TAP OR PRESS ENTER</small></span>
+        </button>
+        <div class="menu-chips">
+          <div class="chip"><span class="chip-ico">◧</span> Swipe to move</div>
+          <div class="chip"><span class="chip-ico">↻</span> Tap to rotate</div>
+          <div class="chip"><span class="chip-ico">▼</span> Swipe down to drop</div>
+        </div>
+        <p class="menu-foot">12 lines · 12 build stages · one beautiful cottage</p>
+      </div>
+      <div class="menu-badge">
+        <span class="badge-star">★</span>
+        <div><b>PHONE + TABLET</b><small>Touch &amp; keyboard ready</small></div>
+      </div>
+    </div>
+
+    <div class="overlay pause-overlay hidden" id="pauseOverlay">
+      <div class="modal-card">
+        <div class="modal-kicker">TAKE A BREATH</div>
+        <h2>PAUSED</h2>
+        <p>Your cottage will wait. The blocks aren't going anywhere.</p>
+        <button class="primary-btn small" id="resumeBtn"><span class="play-icon">▶</span><span class="btn-copy"><b>KEEP BUILDING</b><small>RESUME GAME</small></span></button>
+        <button class="text-btn" id="restartFromPause">Start a new build</button>
+      </div>
+    </div>
+
+    <div class="overlay gameover-overlay hidden" id="gameOverOverlay">
+      <div class="modal-card">
+        <div class="modal-kicker">THE BLUEPRINT IS SAFE</div>
+        <h2>OUT OF SPACE</h2>
+        <p>Your cottage reached <b id="gameOverPct">0%</b>. A fresh plot is ready whenever you are.</p>
+        <div class="result-stats">
+          <div><span>SCORE</span><b id="finalScore">0</b></div>
+          <div><span>LINES</span><b id="finalLines">0</b></div>
+          <div><span>LEVEL</span><b id="finalLevel">1</b></div>
+        </div>
+        <button class="primary-btn small" id="retryBtn"><span class="play-icon">↻</span><span class="btn-copy"><b>TRY AGAIN</b><small>NEW PLOT</small></span></button>
+      </div>
+    </div>
+
+    <div class="overlay win-overlay hidden" id="winOverlay">
+      <div class="win-rays"></div>
+      <div class="modal-card win-card">
+        <div class="win-medal">⌂</div>
+        <div class="modal-kicker">BUILD COMPLETE</div>
+        <h2>HOME SWEET HOME</h2>
+        <p>You stacked, cleared and crafted a cottage from nothing. The lanterns are lit — come on in.</p>
+        <div class="result-stats">
+          <div><span>SCORE</span><b id="winScore">0</b></div>
+          <div><span>LINES</span><b id="winLines">12</b></div>
+          <div><span>BEST COMBO</span><b id="winCombo">0</b></div>
+        </div>
+        <button class="primary-btn small" id="winBtn"><span class="play-icon">↻</span><span class="btn-copy"><b>BUILD ANOTHER</b><small>FRESH BLUEPRINT</small></span></button>
+        <button class="text-btn" id="keepBtn">Keep playing this plot</button>
+      </div>
+    </div>
+
+    <div class="rotate-hint" id="rotateHint">
+      <div class="rotate-phone">▯</div>
+      <p>Turn your phone for the full cottage view</p>
+    </div>
+  </div>
+
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three.module.js" } }
+  </script>
+  <script type="module" src="./js/main.js"></script>
+</body>
+</html>
