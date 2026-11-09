@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#101a20" />
+  <title>Blockstead — Build your voxel home</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Blockstead home"><span class="brand-mark">▦</span><span>BLOCK<span class="brand-light">STEAD</span></span></a>
+      <div class="season"><span class="sun-dot"></span> CREATIVE SEASON <b>01</b></div>
+      <button class="sound-button" id="soundBtn" aria-label="Toggle sound" title="Toggle sound">♫ <span>Sound on</span></button>
+    </header>
+
+    <section class="intro-row">
+      <div>
+        <p class="eyebrow">A LITTLE BLOCK-BY-BLOCK ADVENTURE</p>
+        <h1>Make room <span>to grow.</span></h1>
+        <p class="subtitle">Stack the pieces. Finish a floor. Build a home that's yours.</p>
+      </div>
+      <div class="level-pill"><span class="level-icon">✦</span><div><small>BUILD LEVEL</small><strong id="levelText">01 <i>／</i> 10</strong></div><div class="level-track"><i id="levelProgress"></i></div></div>
+    </section>
+
+    <section class="game-layout" aria-label="Blockstead game">
+      <div class="playfield-card">
+        <div class="playfield-top"><div class="live-label"><span class="live-dot"></span><span id="statusText">YOUR BUILD SITE</span></div><div class="site-label">PINE RIDGE <span>·</span> PLOT 08</div></div>
+        <canvas id="gameCanvas" aria-label="Three dimensional voxel block game"></canvas>
+        <div class="canvas-hint" id="canvasHint"><span>↔</span> Move <b>·</b> <span>↻</span> Rotate <b>·</b> <span>↓</span> Drop</div>
+        <div class="overlay" id="overlay">
+          <div class="overlay-card"><span class="overlay-spark">✦</span><p class="eyebrow">YOUR VERY OWN PLOT</p><h2>Let's lay the<br><em>first brick.</em></h2><p>Fit blocks across the whole floor to finish a new part of your house.</p><button class="primary-button" id="startBtn">Start building <span>→</span></button><small>NO PLANS NEEDED. JUST GOOD BLOCKS.</small></div>
+        </div>
+        <div class="toast" id="toast" aria-live="polite"></div>
+      </div>
+
+      <aside class="sidebar">
+        <section class="home-card">
+          <div class="card-heading"><div><p class="eyebrow">YOUR LITTLE PLACE</p><h2>Home sweet home</h2></div><span class="home-heart">♡</span></div>
+          <canvas id="homeCanvas" aria-label="Your house being built"></canvas>
+          <div class="home-caption"><span class="material-dot"></span><span id="homeStatus">Waiting for the first floor</span><span class="home-percent" id="homePercent">0%</span></div>
+          <div class="build-track"><i id="buildProgress"></i></div>
+        </section>
+
+        <section class="stats-card">
+          <div class="section-label">THIS SESSION <span>↗</span></div>
+          <div class="stats-grid"><div><small>BLOCKS PLACED</small><strong id="blocksText">0</strong></div><div><small>FLOORS BUILT</small><strong id="floorsText">0<span> / 10</span></strong></div></div>
+          <div class="next-row"><div><small>NEXT PIECE</small><strong id="nextName">Pine planks</strong></div><canvas id="nextCanvas" aria-label="Next block piece"></canvas></div>
+        </section>
+
+        <div class="side-actions"><button class="quiet-button" id="pauseBtn" disabled><span>Ⅱ</span> Pause</button><button class="quiet-button restart-button" id="restartBtn"><span>↻</span> Restart</button></div>
+      </aside>
+    </section>
+
+    <section class="controls" aria-label="Game controls">
+      <div class="control-tip"><span class="tip-icon">⌨</span><div><b>Keyboard</b><small>← → / ↑ ↓ move <i>·</i> Q rotate <i>·</i> S faster <i>·</i> Space drop</small></div></div>
+      <div class="touch-controls">
+        <button class="touch-btn move-btn" data-action="left" aria-label="Move left">←</button>
+        <button class="touch-btn move-btn" data-action="right" aria-label="Move right">→</button>
+        <button class="touch-btn move-btn depth-btn" data-action="back" aria-label="Move back">↑</button>
+        <button class="touch-btn move-btn depth-btn" data-action="front" aria-label="Move forward">↓</button>
+        <button class="touch-btn rotate-btn" data-action="rotate" aria-label="Rotate piece">↻</button>
+        <button class="touch-btn drop-btn" data-action="drop" aria-label="Drop piece">DROP <span>↓</span></button>
+      </div>
+      <p class="controls-note">MADE FOR SMALL SCREENS <span>✦</span> PLAY YOUR WAY</p>
+    </section>
+    <footer><span>BLOCKSTEAD <i>©</i> 2026</span><span>A COZY LITTLE BUILDING GAME</span></footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
